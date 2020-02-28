@@ -10,6 +10,7 @@ public class Percolation {
     private final int size;
     private int numOfOpenSites;
     private final WeightedQuickUnionUF uf;
+    private final WeightedQuickUnionUF normalUF; //without the bottom site
     
     // creates n-by-n grid, with all sites initially block (set value to be 0)
     public Percolation(int n) {
@@ -19,12 +20,8 @@ public class Percolation {
         size = n;
         grid = new boolean[n][n];
         numOfOpenSites = 0;
-        for (int i = 0; i < n; i += 1) {
-            for (int j = 0; j < n; j += 1) {
-                grid[i][j] = false;
-            }
-        }
         uf = new WeightedQuickUnionUF(n * n + 2);
+        normalUF = new WeightedQuickUnionUF(n * n + 1);
     }
     
     /**
@@ -58,33 +55,35 @@ public class Percolation {
         grid[row - 1][col - 1] = true;
         numOfOpenSites += 1;
         connect(row, col);
-        if (!percolates()) {
-            if (row == size) {
-                uf.union(size * size + 1, xyToID(row, col));
-            }
-        }
     }
     
     private void connect(int row, int col) {
         int ID = xyToID(row, col);
+        // top
         if (row == 1) {
             uf.union(0, ID);
+            normalUF.union(0, ID);
         }
-        // up
-        if (row > 1 && grid[row - 2][col - 1]) {
-            uf.union(ID, ID - size);
+        // bottom
+        if (row == size) {
+            uf.union(size * size + 1, xyToID(row, col));
         }
-        // down
-        if (row < size && grid[row][col - 1]) {
-            uf.union(ID, ID + size);
-        }
-        // left
-        if (col > 1 && grid[row - 1][col - 2]) {
-            uf.union(ID, ID - 1);
-        }
-        // right
-        if (col < size && grid[row - 1][col]) {
-            uf.union(ID, ID + 1);
+        //up
+        connectHelper(row, col, row - 1, col);
+        //down
+        connectHelper(row, col, row + 1, col);
+        //left
+        connectHelper(row, col, row, col - 1);
+        //right
+        connectHelper(row, col, row, col + 1);
+    }
+    
+    private void connectHelper(int rowA, int colA, int rowB, int colB) {
+        int aID = xyToID(rowA, colA);
+        int bID = xyToID(rowB, colB);
+        if (rowB > 0 && rowB <= size && colB > 0 && colB <= size && isOpen(rowB, colB)) {
+            uf.union(aID, bID);
+            normalUF.union(aID, bID);
         }
     }
     
@@ -97,7 +96,7 @@ public class Percolation {
     // is the site full?
     public boolean isFull(int row, int col) {
         indicesValidation(row, col);
-        return uf.connected(0, xyToID(row, col));
+        return normalUF.connected(0, xyToID(row, col));
     }
     
     // returns the number of open sites
