@@ -10,7 +10,7 @@ public class Percolation {
     private final int size;
     private int numOfOpenSites;
     private final WeightedQuickUnionUF uf;
-    private final WeightedQuickUnionUF normalUF; //without the bottom site
+    private final WeightedQuickUnionUF normalUF; // without the bottom site
     
     // creates n-by-n grid, with all sites initially block (set value to be 0)
     public Percolation(int n) {
@@ -68,13 +68,13 @@ public class Percolation {
         if (row == size) {
             uf.union(size * size + 1, xyToID(row, col));
         }
-        //up
+        // up
         connectHelper(row, col, row - 1, col);
-        //down
+        // down
         connectHelper(row, col, row + 1, col);
-        //left
+        // left
         connectHelper(row, col, row, col - 1);
-        //right
+        // right
         connectHelper(row, col, row, col + 1);
     }
     

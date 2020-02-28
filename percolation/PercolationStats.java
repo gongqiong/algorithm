@@ -2,10 +2,9 @@ import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
-    private final double[] pArray;
     private final int size;
     private final int numOfTrials;
-    private final double CONFIDENCE_95 = 1.96;
+    private static final double CONFIDENCE_95 = 1.96;
     private final double mean;
     private final double stddev;
     
@@ -16,7 +15,7 @@ public class PercolationStats {
         }
         size = n;
         numOfTrials = trials;
-        pArray = new double[trials];
+        final double[] pArray = new double[trials];
         for (int i = 0; i < trials; i += 1) {
             Percolation perc = new Percolation(n);
             pArray[i] = oneTrial(perc);
