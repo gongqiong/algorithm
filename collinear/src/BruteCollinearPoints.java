@@ -13,17 +13,18 @@ public class BruteCollinearPoints {
     // find all line segments containing 4 points
     public BruteCollinearPoints(Point[] points) {
         checkNull(points);
-        Arrays.sort(points);
-        checkDuplicate(points);
-        final int num = points.length;
+        Point[] sortedPoints = points.clone();
+        Arrays.sort(sortedPoints);
+        checkDuplicate(sortedPoints);
+        final int num = sortedPoints.length;
         List<LineSegment> listOfLineSegment = new LinkedList<>();
         for (int i = 0; i < num - 3; i += 1) {
             for (int j = i + 1; j < num - 2; j += 1) {
                 for (int k = j + 1; k < num - 1; k += 1) {
-                    if (points[i].slopeOrder().compare(points[j], points[k]) == 0) {
-                        for (int l = k + 1; l < num; l += 1) {
-                            if (points[i].slopeOrder().compare(points[j], points[l]) == 0) {
-                                listOfLineSegment.add(new LineSegment(points[i], points[l]));
+                    if (sortedPoints[i].slopeOrder().compare(sortedPoints[j], sortedPoints[k]) == 0) {
+                        for (int q = k + 1; q < num; q += 1) {
+                            if (sortedPoints[i].slopeOrder().compare(sortedPoints[j], sortedPoints[q]) == 0) {
+                                listOfLineSegment.add(new LineSegment(sortedPoints[i], sortedPoints[q]));
                                 break;
                             }
                         }
@@ -61,7 +62,7 @@ public class BruteCollinearPoints {
     
     // the line segments
     public LineSegment[] segments() {
-        return lineSegments;
+        return lineSegments.clone();
     }
     
     public static void main(String[] args) {

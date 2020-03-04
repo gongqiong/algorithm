@@ -13,25 +13,25 @@ public class FastCollinearPoints {
     // find all line segments containing 4 points
     public FastCollinearPoints(Point[] points) {
         checkNull(points);
-        Arrays.sort(points);
-        checkDuplicate(points);
-        int num = points.length;
+        Point[] sortedPoints = points.clone();
+        Arrays.sort(sortedPoints);
+        checkDuplicate(sortedPoints);
+        int num = sortedPoints.length;
         List<LineSegment> listOfLineSegments = new LinkedList<>();
         for (int i = 0; i < num - 3; i += 1) {
-            Point pi = points[i];
-            int numOfNext = num - i - 1;
-            Point[] pointsBySlop = new Point[numOfNext];
-            System.arraycopy(points, i + 1, pointsBySlop, 0, numOfNext);
+            Point pi = sortedPoints[i];
+            Point[] pointsBySlop = sortedPoints.clone();
             Arrays.sort(pointsBySlop, pi.slopeOrder());
-            int x = 0;
-            while (numOfNext >= 3 && x < numOfNext - 2) {
+            int x = 1;
+            while (x < num) {
+                Point px = pointsBySlop[x];
+                final double slopi = pi.slopeTo(pointsBySlop[x]);
                 int n = 1;
-                double slopi = pi.slopeTo(pointsBySlop[x]);
-                while (x < numOfNext - 1 && pi.slopeTo(pointsBySlop[x + 1]) == slopi) {
-                    n += 1;
+                while (x + 1 < num && pi.slopeTo(pointsBySlop[x + 1]) == slopi) {
                     x += 1;
+                    n += 1;
                 }
-                if (n >= 3) {
+                if (pi.compareTo(px) < 0 && n >= 3) {
                     listOfLineSegments.add(new LineSegment(pi, pointsBySlop[x]));
                 }
                 x += 1;
@@ -67,7 +67,7 @@ public class FastCollinearPoints {
     
     // the line segment
     public LineSegment[] segments() {
-        return lineSegments;
+        return lineSegments.clone();
     }
     
     public static void main(String[] args) {
